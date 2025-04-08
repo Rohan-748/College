@@ -1,0 +1,99 @@
+import pandas as pd
+
+# Step 1: Data for Colleges (you can replace it with actual data)
+data = {
+    'College Name': ['University School of Information, Communication and Technology (USICT)', 'Maharaja Agrasen Institute of Technology (MAIT)', 
+                     'Bharati Vidyapeeth\'s College of Engineering (BVCOE)', 'Guru Tegh Bahadur Institute of Technology (GTBIT)', 
+                     'Bhagwan Parshuram Institute of Technology (BPIT)', 'HMR Institute of Technology & Management', 
+                     'Maharaja Surajmal Institute of Technology (MSIT)', 'Dr. Akhilesh Das Gupta Institute of Technology & Management'],
+    'Course Name': ['Computer Science Engineering (CSE)', 'Information Technology (IT)', 'Computer Science Engineering (CSE)', 
+                     'Information Technology (IT)', 'Computer Science Engineering (CSE)', 'Information Technology (IT)', 
+                     'Computer Science Engineering (CSE)', 'Information Technology (IT)'],
+    'State': ['Delhi'] * 8,  # Assuming all colleges are in Delhi
+    'Quota': ['Home State', 'Home State', 'Other State', 'Other State', 'Home State', 'Home State', 'Other State', 'Home State'],
+    'Category': ['General', 'General', 'OBC', 'OBC', 'General', 'General', 'SC', 'SC'],
+    'Gender': ['Male'] * 8,
+    'Opening Rank': [4504, 66357, 111619, 157237, 119838, 297139, 92439, 181978],
+    'Closing Rank': [48952, 92439, 143048, 190659, 143154, 376398, 109664, 218125]
+}
+
+# Step 2: Convert college data into a DataFrame
+df = pd.DataFrame(data)
+
+# Step 3: Student Database (For Registration & Login)
+students_db = {}
+# Step 4: Registration Function
+def register_student():
+    name = input("Enter your full name: ")
+    email = input("Enter your email address: ")
+    mobile = input("Enter your mobile number: ")
+    password = input("Enter your password: ")
+
+    # Store student data in the "students_db" dictionary
+    if email in students_db:
+        print("This email is already registered. Please login instead.")
+    else:
+        students_db[email] = {'name': name, 'mobile': mobile, 'password': password}
+        print(f"Registration successful for {name}!")
+
+# Step 5: Login Function
+def login_student():
+    email = input("Enter your email address: ")
+    password = input("Enter your password: ")
+
+    # Check if the student is registered
+    if email in students_db and students_db[email]['password'] == password:
+        print(f"Login successful! Welcome, {students_db[email]['name']}.")
+        return True
+    else:
+        print("Email or password is incorrect. Please try again.")
+        return False
+# Step 6: Search Function
+def search_colleges(df, rank, category, state, quota, gender):
+    filtered_df = df[
+        (df['State'] == state) &
+        (df['Quota'] == quota) &
+        (df['Category'] == category) &
+        (df['Gender'] == gender) &
+        (df['Opening Rank'] <= rank) &
+        (df['Closing Rank'] >= rank)
+    ]
+    
+    return filtered_df
+
+# Step 7: Main Application Loop
+def main():
+    print("Welcome to the College Search Portal!")
+    while True:
+        print("\nChoose an option (1/2/3):")
+        print("1. Register")
+        print("2. Login")
+        print("3. Exit")
+        
+        choice = input("Enter your choice: ")
+if choice == '1':
+            register_student()
+        elif choice == '2':
+            if login_student():
+                # After login, the student can search for colleges
+                rank = int(input("Enter your rank: "))
+                category = input("Enter your category (General/OBC/SC/ST): ")
+                state = input("Enter your state: ")
+                quota = input("Enter your quota (Home State/Other State): ")
+                gender = input("Enter your gender (Male/Female): ")
+
+                # Call the search function to get matching colleges
+                matching_colleges = search_colleges(df, rank, category, state, quota, gender)
+
+                if not matching_colleges.empty:
+                    print("\nMatching Colleges:")
+                    print(matching_colleges[['College Name', 'Course Name', 'State', 'Quota', 'Category', 'Gender', 'Opening Rank', 'Closing Rank']])
+                else:
+                    print("No colleges found based on your search criteria.")
+        elif choice == '3':
+            print("Thank you for using the College Search Portal. Goodbye!")
+            break
+        else:
+            print("Invalid option. Please try again.")
+if __name__ == "__main__":
+    main()
